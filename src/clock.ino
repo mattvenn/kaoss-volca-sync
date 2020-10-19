@@ -9,13 +9,11 @@ unsigned int clock_count = 0;
 unsigned long tick_time = 0;
 
 // midi clock is 24 pulses per quarter note https://en.wikipedia.org/wiki/MIDI_beat_clock
-#define CLOCKS_PER_SYNC 24
+#define CLOCKS_PER_SYNC 12
 #define SYNC_LEN 5 // ms
 
 #define STATE_WAIT 0
-#define STATE_SYNC_ON 1
-#define STATE_SYNC_WAIT 2
-#define STATE_SYNC_OFF 3
+#define STATE_SYNC_PULSE 1
 
 unsigned int state = STATE_WAIT;
 
@@ -41,25 +39,21 @@ void loop()
     switch(state) 
     {
         case STATE_WAIT:
-            if(clock_count == CLOCKS_PER_SYNC - 1)
-                state = STATE_SYNC_ON;
+            if(clock_count == CLOCKS_PER_SYNC) 
+            {
+                clock_count = 0;
+                tick_time = millis();
+                state = STATE_SYNC_PULSE;
+                digitalWrite(LED, 1);
+            }
             break;
             
-        case STATE_SYNC_ON: 
-            clock_count = 0;
-            tick_time = millis();
-            digitalWrite(LED, 1);
-            state = STATE_SYNC_WAIT;
-            break;
-
-        case STATE_SYNC_WAIT: 
+        case STATE_SYNC_PULSE: 
             if(millis() - tick_time > SYNC_LEN)
-                state = STATE_SYNC_OFF;
-            break;
-                
-        case STATE_SYNC_OFF: 
-            digitalWrite(LED, 0);
-            state = STATE_WAIT;
+            {
+                digitalWrite(LED, 0);
+                state = STATE_WAIT;
+            }
             break;
 
         default:
