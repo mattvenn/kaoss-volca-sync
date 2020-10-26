@@ -31,6 +31,7 @@ void setup()
     // Initiate MIDI communications, listen to all channels
     MIDI.begin(MIDI_CHANNEL_OMNI);
     pinMode(LED, OUTPUT);
+    digitalWrite(LED, 1);
 }
 
 void loop()
