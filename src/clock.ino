@@ -3,7 +3,9 @@
 
 // https://github.com/FortySevenEffects/arduino_midi_library
 
-MIDI_CREATE_DEFAULT_INSTANCE();
+//MIDI_CREATE_DEFAULT_INSTANCE();
+MIDI_CREATE_INSTANCE(HardwareSerial, Serial2, MIDI);
+
 
 unsigned int clock_count = 0;
 unsigned long tick_time = 0;
