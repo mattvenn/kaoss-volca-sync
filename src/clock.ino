@@ -1,12 +1,6 @@
 #include <MIDI.h>
 #define LED 13
 
-// https://github.com/FortySevenEffects/arduino_midi_library
-
-//MIDI_CREATE_DEFAULT_INSTANCE();
-MIDI_CREATE_INSTANCE(HardwareSerial, Serial2, MIDI);
-
-
 unsigned int clock_count = 0;
 unsigned long tick_time = 0;
 
@@ -19,30 +13,23 @@ unsigned long tick_time = 0;
 
 unsigned int state = STATE_WAIT;
 
-void handleClock()
-{
-    clock_count += 1;
-}
-
 void setup()
 {
-    MIDI.setHandleClock(handleClock); 
-
-    // Initiate MIDI communications, listen to all channels
-    MIDI.begin(MIDI_CHANNEL_OMNI);
     pinMode(LED, OUTPUT);
     digitalWrite(LED, 1);
+    Serial2.begin(31250);
 }
 
 void loop()
 {
-    // Call MIDI.read the fastest you can for real-time performance.
-    MIDI.read();
-
+    if(Serial2.available())
+        if(Serial2.read() == 248)
+            clock_count += 1;
+    
     switch(state) 
     {
         case STATE_WAIT:
-            if(clock_count == CLOCKS_PER_SYNC) 
+            if(clock_count >= CLOCKS_PER_SYNC) 
             {
                 clock_count = 0;
                 tick_time = millis();
@@ -55,6 +42,7 @@ void loop()
             if(millis() - tick_time > SYNC_LEN)
             {
                 digitalWrite(LED, 0);
+                Serial.println("clock");
                 state = STATE_WAIT;
             }
             break;
