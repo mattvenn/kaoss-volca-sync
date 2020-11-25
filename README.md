@@ -8,7 +8,7 @@ Kaoss pad puts out midi beat clock https://en.wikipedia.org/wiki/MIDI_beat_clock
 
 https://www.instructables.com/Send-and-Receive-MIDI-with-Arduino/
 
-![circuit](https://content.instructables.com/ORIG/FHN/J43V/H6MEVNIE/FHNJ43VH6MEVNIE.jpg?auto=webp&frame=1&width=1024&fit=bounds&md=6e9fa64c79e410c4f38b10631f547327)
+![circuit](https://www.pjrc.com/teensy/td_libs_MIDI_sch_t3.png)
 
 # Firmware
 
