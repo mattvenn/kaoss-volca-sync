@@ -23,3 +23,7 @@ Use callback on midi clock and a simple state machine to make 5ms pulses positiv
 https://github.com/FortySevenEffects/arduino_midi_library
 
 details on choosing different hardware serial: https://www.pjrc.com/teensy/td_libs_MIDI.html
+
+# WS2812 LED Bar marker
+
+Use a strip of WS2812 LEDs plus the FastLED library to show current bar.
