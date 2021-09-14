@@ -1,7 +1,7 @@
 #include <MIDI.h>
 #define LED 13
 #include "FastLED.h"
-#define NUM_LEDS 32
+#define NUM_LEDS 32 
 #define DATA_PIN 17 
 
 unsigned int clock_count = 0;
@@ -16,14 +16,15 @@ CRGB bar_marker   = CRGB(2, 10, 0);
 // midi clock is 24 pulses per quarter note https://en.wikipedia.org/wiki/MIDI_beat_clock
 #define CLOCKS_PER_SYNC 12
 #define SYNC_LEN 5 // ms
-#define SYNCS_PER_LED  12 // so should be 1 led per bar
+#define SYNCS_PER_LED 12 // so should be 1 led per bar
 
 #define STATE_WAIT 0
 #define STATE_SYNC_PULSE 1
-#define INCREMENT_LED 2
+#define STATE_INCREMENT_LED 2
 
-unsigned int state = STATE_WAIT;
+unsigned int state = STATE_INCREMENT_LED;
 
+// leds are backwards; 0 on the right and NUM_LEDS-1 on the left.
 CRGB leds[NUM_LEDS];
 
 void setup()
@@ -33,16 +34,16 @@ void setup()
     Serial2.begin(31250);
     FastLED.addLeds<WS2812, DATA_PIN>(leds, NUM_LEDS);
     reset_leds();
-    FastLED.show();
 }
 
 void reset_leds()
 {
-    for(int i = 0; i < NUM_LEDS; i ++)
+    for(int i = NUM_LEDS-1; i >= 0; i --)
     {
-        leds[i] = CRGB::Black;
-        if((i+1) % 4 == 0)
+        if(i % 4 == 0)
             leds[i] = bar_marker;
+        else
+            leds[i] = CRGB::Black;
     }
 }
 
@@ -80,27 +81,25 @@ void loop()
                 Serial.println("clock");
                 Serial.println(sync_count);
                 if(sync_count == SYNCS_PER_LED)
-                    state = INCREMENT_LED;
+                    state = STATE_INCREMENT_LED;
                 else    
                     state = STATE_WAIT;
             }
             break;
 
-        case INCREMENT_LED:
+        case STATE_INCREMENT_LED:
             sync_count = 0;
-
-            if(led_count == NUM_LEDS)
-            {
-                reset_leds();
-                led_count = 0;
-            }
-
-            leds[led_count] = bar_complete;
+            leds[NUM_LEDS-1-led_count] = bar_complete;
             FastLED.show();
             led_count ++;
 
-            state = STATE_WAIT;
+            if(led_count >= NUM_LEDS)
+            {
+                led_count = 0;
+                reset_leds();
+            }
 
+            state = STATE_WAIT;
             break;
 
         default:
